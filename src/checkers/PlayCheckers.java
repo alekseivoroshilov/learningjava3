@@ -12,12 +12,14 @@ import javafx.stage.Stage;
 import static java.lang.Math.abs;
 
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
 
 public class PlayCheckers extends Application {
     public static final int BOX_SIZE = 98;
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
     private Box[][] board = new Box[WIDTH][HEIGHT];
+    ArrayList<Checker> checkersThatMustEat = new ArrayList<>(); //хранит ссылки на шашки, которые должны есть
 
     //заставляет игроков ходить по очереди
     public static CheckerType turn = CheckerType.WHITE;
@@ -135,17 +137,19 @@ public class PlayCheckers extends Application {
                 result = tryMove(checker, newX, newY);
             }
 
-            int x0 = toBoard(checker.getOldX());
+            int x0 = toBoard(checker.getOldX()); //перевод в удобные для восприятия координаты от 1 до 8
             int y0 = toBoard(checker.getOldY());
-
+            //
+            boolean playerMustEat = !checkersThatMustEat.isEmpty(); //есть ли шашки, что обязаны есть?
+            //
+            System.out.println("Should i eat a checker?: " + playerMustEat);
             switch (result.getType()) {
                 case NONE:
                     checker.wrongMove();
-                    ;
                     break;
                 case NORMAL:
                     //если пользователь сделает обычное движение после убийства, движение не засчитывается
-                    if (!previousTurnCheckerKilled) {
+                    if (!previousTurnCheckerKilled && !playerMustEat){
                         checker.move(newX, newY);
                         board[x0][y0].setChecker(null);
                         if (newY == 0 || abs(newY) == 7) { //если этот ход пришёлся на верхний-нижний край доски
@@ -158,23 +162,26 @@ public class PlayCheckers extends Application {
                             board[newX][newY].setChecker(checker);
                         //всегда меняю очередь хода
                         turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
-                    } else {
+                        shouldEatFun();
+
+                    } else checker.wrongMove();
                         // после убийства, если есть ещё вражеские шашки, просто перемещаться нельзя
-                        checker.wrongMove();
-                    }
+
                     break;
                 case QUEEN:
-                    checker.move(newX, newY);
-                    board[x0][y0].setChecker(null);
-                    board[newX][newY].setChecker(checker);
+                    if(!playerMustEat) {
+                        checker.move(newX, newY);
+                        board[x0][y0].setChecker(null);
+                        board[newX][newY].setChecker(checker);
 
-                    turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
+                        turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
+                    }else checker.wrongMove();
                     break;
                 case KILL:
                     checker.move(newX, newY);
                     board[x0][y0].setChecker(null);
 
-                    if ((newY == 0 || abs(newY) == 7) && !checker.isQueen()) {
+                    if ((newY == 0 || abs(newY) == 7) && !checker.isQueen()) { //после убийства стал королевой
                         System.out.println("QUEEN DETECTED");
                         Checker upgradedChecker = makeChecker(checker.getType(), newX, newY, true);
                         board[newX][newY].setChecker(upgradedChecker);
@@ -187,44 +194,15 @@ public class PlayCheckers extends Application {
                     Checker otherChecker = result.getChecker();
                     board[toBoard(otherChecker.getOldX())][toBoard(otherChecker.getOldY())].setChecker(null);
                     checkersGroup.getChildren().remove(otherChecker);
-                    //переменные с клетками, рядом с местом нашей шашки после убийства (для серии убийств, чтобы понять, куда дальше есть)
-                    Box tileUpRight = board[newX + 1][newY - 1]; //вражеская шашка
-                    Box tileUpLeft = board[newX - 1][newY - 1];
-                    Box tileDownRight = board[newX + 1][newY + 1];
-                    Box tileDownLeft = board[newX - 1][newY + 1];
 
-                    boolean canEatUp = false;
-                    boolean canEatDown = false;
-                    System.out.println(newX + " " + newY);
-                    if (checker.getType() == CheckerType.BLACK || checker.isQueen()) { //если убийство делает чёрная шашка
-                        try {
-                            canEatDown = tileDownLeft.hasChecker() && tileDownLeft.getChecker().getType() != checker.getType() && !board[newX - 2][newY + 2].hasChecker() ||
-                                    tileDownRight.hasChecker() && tileDownRight.getChecker().getType() != checker.getType() && !board[newX + 2][newY + 2].hasChecker();
-                            System.out.println(canEatDown);
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            previousTurnCheckerKilled = false;
-                            canEatDown = false;
-                        }
-                        if (canEatDown)
-                            previousTurnCheckerKilled = true; //условие, чтобы можно было совершить серию убийств
-                    }
-                    //если убийство делает белая шашка
-                    if (checker.getType() == CheckerType.WHITE || checker.isQueen()) {
-                        try {
-                            canEatUp = tileUpLeft.hasChecker() && tileUpLeft.getChecker().getType() != checker.getType() && !board[newX - 2][newY - 2].hasChecker() ||
-                                    tileUpRight.hasChecker() && tileUpRight.getChecker().getType() != checker.getType() && !board[newX + 2][newY - 2].hasChecker();
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            previousTurnCheckerKilled = false;
-                            canEatUp = false;
-                        }
-                        if (canEatUp)
-                            previousTurnCheckerKilled = true;
-                    }
+                    previousTurnCheckerKilled = enemiesNearbyCanBeKilled(checker, newX, newY);
 
                     System.out.println(previousTurnCheckerKilled);
                     // нет шашек противника в досигаемости? ход передаётся противнику
-                    if (!previousTurnCheckerKilled)
+                    if (!previousTurnCheckerKilled) {
                         turn = (turn == CheckerType.WHITE) ? CheckerType.BLACK : CheckerType.WHITE;
+                        checkersThatMustEat.clear();
+                    }
                     break;
 
             }
@@ -232,7 +210,49 @@ public class PlayCheckers extends Application {
 
         return checker;
     }
+    public boolean enemiesNearbyCanBeKilled(Checker checker, int x, int y){
+        try {
+            Box tileUpRight = board[x + 1][y - 1]; //вражеская шашка справа вверху
+            Box tileUpLeft = board[x - 1][y - 1]; //вражеская шашка слева вверху
+            Box tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
+            Box tileDownLeft = board[x - 1][y + 1]; //вражеская шашка слева внизу
 
+            boolean downCheckersCanBeEaten = tileDownLeft.hasChecker() && tileDownLeft.getChecker().getType() != checker.getType() && !board[x - 2][y + 2].hasChecker()
+                    || tileDownRight.hasChecker() && tileDownRight.getChecker().getType() != checker.getType() && !board[x + 2][y + 2].hasChecker();
+            boolean upCheckersCanBeEaten = tileUpLeft.hasChecker() && tileUpLeft.getChecker().getType() != checker.getType() && !board[x - 2][y - 2].hasChecker()
+                    || tileUpRight.hasChecker() && tileUpRight.getChecker().getType() != checker.getType() && !board[x + 2][y - 2].hasChecker();
+            switch (checker.getType()) {
+                case WHITE:
+                    if (upCheckersCanBeEaten) return true;
+                    break;
+                case BLACK:
+                    if (downCheckersCanBeEaten) return true;
+                    break;
+                default:
+                    if (checker.isQueen() && (upCheckersCanBeEaten || downCheckersCanBeEaten)) return true;
+                    break;
+            }
+        }catch (ArrayIndexOutOfBoundsException ex){
+            return false;
+        }
+        return false;
+    }
+
+    public void shouldEatFun() {
+        Checker currentChecker = null;
+        //ArrayList<Checker> checkersThatMustEat = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                currentChecker = board[i][j].hasChecker()? board[i][j].getChecker() : null;
+                if (currentChecker != null && currentChecker.getType() == turn &&
+                        enemiesNearbyCanBeKilled(currentChecker, i, j)) {
+                    currentChecker.setMustEat(true);
+                    checkersThatMustEat.add(currentChecker);
+                }
+            }
+        }
+
+    }
     public static void main(String[] args) {
         launch(args);
     }

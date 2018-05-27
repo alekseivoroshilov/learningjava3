@@ -24,7 +24,5 @@ public class Box extends Rectangle {
         setHeight(PlayCheckers.BOX_SIZE);
 
         relocate(x * PlayCheckers.BOX_SIZE, y * PlayCheckers.BOX_SIZE);
-        //if (isblack) setFill(Color.valueOf("#feb"));
-        //else setFill(Color.valueOf("#582"));
     }
 }

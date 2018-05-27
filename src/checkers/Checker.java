@@ -21,21 +21,22 @@ public class Checker extends StackPane {
     private double mouseX, mouseY;
     private double oldX, oldY;
     private boolean queen = false;
+    private boolean mustEatThisRound = false;
 
     public CheckerType getType() {
         return type;
     }
-
-    public void setQueen(boolean queen) {this.queen = queen; }
     public boolean isQueen() { return queen; }
-
     public double getOldX() {
         return oldX;
     }
-
     public double getOldY() {
         return oldY;
     }
+    public boolean mustEat() {
+        return mustEatThisRound;
+    }
+    public void setMustEat(boolean b) { this.mustEatThisRound = b; }
 
     public Checker(CheckerType type, int x, int y, boolean queen) {
         this.queen = queen;
@@ -49,7 +50,6 @@ public class Checker extends StackPane {
         else{
             iv = new ImageView(type == CheckerType.BLACK ? blackChecker: whiteChecker);
         }
-        System.out.println(this + " " + "queen:" + queen);
 
         iv.setTranslateX((BOX_SIZE - BOX_SIZE * 0.38 * 2) / 2);
         iv.setTranslateY((BOX_SIZE - BOX_SIZE * 0.38 * 2) / 2);
@@ -58,8 +58,6 @@ public class Checker extends StackPane {
         setOnMousePressed(e -> {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
-            System.out.println("mouseX = e.getSceneX(); = " + mouseX);
-            System.out.println("mouseY = e.getSceneY(); = " + mouseY);
         });
 
         setOnMouseDragged(e -> {
