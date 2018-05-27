@@ -75,13 +75,6 @@ public class Checker extends StackPane {
         relocate(oldX, oldY);
     }
 }
-class weirdGreenThing extends Pane {
-    private double mouseX, mouseY;
-    private double oldX, oldY;
-    void weirdGreenThing(int x, int y){
-
-    }
-}
 
 enum CheckerType {
     //определяет движение по цвету

@@ -11,11 +11,10 @@ import javafx.stage.Stage;
 
 import static java.lang.Math.abs;
 
-import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 
 public class PlayCheckers extends Application {
-    public static final int BOX_SIZE = 98;
+    static final int BOX_SIZE = 98;
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
     private Box[][] board = new Box[WIDTH][HEIGHT];
@@ -30,7 +29,6 @@ public class PlayCheckers extends Application {
     private Group tileGroup = new Group();
     private Group checkersGroup = new Group();
     private Image boardImage = new Image("board.png");
-//    private Stage primaryStage = new Stage();
 
     private Parent createContent() {
 
@@ -38,14 +36,9 @@ public class PlayCheckers extends Application {
         StackPane sp = new StackPane();
 
         Pane boardPane = new Pane();
-        //note:
-        //0.067 - коэффициент, равный отношению одного отступа (60 пикселей сбоку для цифр, например) от длины стороны доски
         Pane root = new Pane();
         root.setPrefSize(WIDTH * BOX_SIZE, HEIGHT * BOX_SIZE);
-        //root.getChildren().addAll(tileGroup);
-        //root.getChildren().addAll(borderImageViev);
         boardPane.getChildren().addAll(borderImageViev);
-        //Scene boardScene = new Scene(boardTexture);
         root.setTranslateY(60);
         root.setTranslateX(60);
         root.getChildren().addAll(checkersGroup);
