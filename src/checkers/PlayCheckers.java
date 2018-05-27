@@ -31,10 +31,8 @@ public class PlayCheckers extends Application {
     private Image boardImage = new Image("board.png");
 
     private Parent createContent() {
-
         ImageView borderImageViev = new ImageView(boardImage);
         StackPane sp = new StackPane();
-
         Pane boardPane = new Pane();
         Pane root = new Pane();
         root.setPrefSize(WIDTH * BOX_SIZE, HEIGHT * BOX_SIZE);
@@ -44,32 +42,22 @@ public class PlayCheckers extends Application {
         root.getChildren().addAll(checkersGroup);
         sp.getChildren().add(boardPane);
         sp.getChildren().add(root);
+
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
                 Box tile = new Box((x + y) % 2 == 0, x, y);
                 board[x][y] = tile;
-
                 tileGroup.getChildren().add(tile);
-
                 Checker checker = null;
-
-                if (y <= 2 && (x + y) % 2 != 0) {
-                    checker = makeChecker(CheckerType.BLACK, x, y, false);
-                }
-
-                if (y >= 5 && (x + y) % 2 != 0) {
-                    checker = makeChecker(CheckerType.WHITE, x, y, false);
-                }
-
+                if (y <= 2 && (x + y) % 2 != 0) checker = makeChecker(CheckerType.BLACK, x, y, false);
+                if (y >= 5 && (x + y) % 2 != 0) checker = makeChecker(CheckerType.WHITE, x, y, false);
                 if (checker != null) {
                     tile.setChecker(checker);
                     checkersGroup.getChildren().add(checker);
                 }
             }
         }
-
-        //return root;
-        return sp;
+        return sp;      //returns root;
     }
 
     private MoveResult tryMove(Checker checker, int newX, int newY) {
@@ -106,10 +94,6 @@ public class PlayCheckers extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Scene scene = new Scene(createContent());
-        ImageView boardTextureView = new ImageView(boardImage);
-        BackgroundImage bi = new BackgroundImage(boardImage, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-
         primaryStage.setTitle("EnglishDraughts");
         primaryStage.setScene(scene);
         primaryStage.show();

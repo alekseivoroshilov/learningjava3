@@ -33,9 +33,6 @@ public class Checker extends StackPane {
     public double getOldY() {
         return oldY;
     }
-    public boolean mustEat() {
-        return mustEatThisRound;
-    }
     public void setMustEat(boolean b) { this.mustEatThisRound = b; }
 
     public Checker(CheckerType type, int x, int y, boolean queen) {

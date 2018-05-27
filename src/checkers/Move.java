@@ -1,8 +1,5 @@
 package checkers;
 
-/**
- * @author Almas Baimagambetov (almaslvl@gmail.com)
- */
 class MoveResult {
 
     private MoveType type;
