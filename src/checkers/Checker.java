@@ -1,11 +1,13 @@
 package checkers;
 
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+
 
 import static checkers.PlayCheckers.BOX_SIZE;
 
@@ -38,6 +40,14 @@ public class Checker extends StackPane {
     public Checker(CheckerType type, int x, int y, boolean queen) {
         this.queen = queen;
         this.type = type;
+        DropShadow ds = new DropShadow();
+        ds.setWidth(50);
+        ds.setHeight(50);
+        ds.setOffsetX(3);
+        ds.setOffsetY(3);
+        ds.setRadius(10);
+        ds.setSpread(0.5);
+        this.setEffect(ds);
         move(x, y);
         ImageView iv = new ImageView();
         if (queen){

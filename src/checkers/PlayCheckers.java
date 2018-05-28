@@ -18,7 +18,7 @@ public class PlayCheckers extends Application {
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
     private Box[][] board = new Box[WIDTH][HEIGHT];
-    ArrayList<Checker> checkersThatMustEat = new ArrayList<>(); //хранит ссылки на шашки, которые должны есть
+    private ArrayList<Checker> checkersThatMustEat = new ArrayList<>(); //хранит ссылки на шашки, которые должны есть
 
     //заставляет игроков ходить по очереди
     public static CheckerType turn = CheckerType.WHITE;
@@ -140,6 +140,7 @@ public class PlayCheckers extends Application {
                         //всегда меняю очередь хода
                         turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
                         shouldEatFun();
+                        System.out.println(checkersThatMustEat);
 
                     } else checker.wrongMove();
                         // после убийства, если есть ещё вражеские шашки, просто перемещаться нельзя
@@ -152,6 +153,8 @@ public class PlayCheckers extends Application {
                         board[newX][newY].setChecker(checker);
 
                         turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
+                        shouldEatFun();
+                        System.out.println(checkersThatMustEat);
                     }else checker.wrongMove();
                     break;
                 case KILL:
@@ -179,6 +182,8 @@ public class PlayCheckers extends Application {
                     if (!previousTurnCheckerKilled) {
                         turn = (turn == CheckerType.WHITE) ? CheckerType.BLACK : CheckerType.WHITE;
                         checkersThatMustEat.clear();
+                        shouldEatFun();
+                        System.out.println(checkersThatMustEat);
                     }
                     break;
 
@@ -187,48 +192,125 @@ public class PlayCheckers extends Application {
 
         return checker;
     }
-    public boolean enemiesNearbyCanBeKilled(Checker checker, int x, int y){
-        try {
-            Box tileUpRight = board[x + 1][y - 1]; //вражеская шашка справа вверху
-            Box tileUpLeft = board[x - 1][y - 1]; //вражеская шашка слева вверху
-            Box tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
-            Box tileDownLeft = board[x - 1][y + 1]; //вражеская шашка слева внизу
 
-            boolean downCheckersCanBeEaten = tileDownLeft.hasChecker() && tileDownLeft.getChecker().getType() != checker.getType() && !board[x - 2][y + 2].hasChecker()
-                    || tileDownRight.hasChecker() && tileDownRight.getChecker().getType() != checker.getType() && !board[x + 2][y + 2].hasChecker();
-            boolean upCheckersCanBeEaten = tileUpLeft.hasChecker() && tileUpLeft.getChecker().getType() != checker.getType() && !board[x - 2][y - 2].hasChecker()
-                    || tileUpRight.hasChecker() && tileUpRight.getChecker().getType() != checker.getType() && !board[x + 2][y - 2].hasChecker();
+    public boolean enemiesNearbyCanBeKilled(Checker checker, int x, int y) {
+        Box tileUpRight = null;
+        Box tileUpLeft = null;
+        Box tileDownRight = null;
+        Box tileDownLeft = null;
+
+        Box tileUpRight2 = null;
+        Box tileUpLeft2 = null;
+        Box tileDownRight2 = null;
+        Box tileDownLeft2 = null;
+        boolean specialPosition = false;
+        boolean outBorderSafePositionByX = x <= 5 && x >= 2;
+        boolean outBorderSafePositionByY = y <= 5 && y >= 2;
+
+
+        System.out.println(x + " " + y);
+        System.out.println(outBorderSafePositionByX + " " + outBorderSafePositionByY);
+        if (x <= 1 && y <= 1) {
+            tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
+            tileDownRight2 = board[x + 2][y + 2]; //вражеская шашка справа внизу
+            specialPosition = true;
+        }
+        if (x <= 1 && y >= 6) {
+            tileUpRight = board[x + 1][y - 1]; //вражеская шашка справа вверху
+            tileUpRight2 = board[x + 2][y - 2]; //вражеская шашка справа вверху
+            specialPosition = true;
+        }
+        if (x >= 6 && y >= 6) {
+            tileUpLeft = board[x - 1][y - 1]; //вражеская шашка слева вверху
+            tileUpLeft2 = board[x - 2][y - 2]; //вражеская шашка слева вверху
+            specialPosition = true;
+        }
+        if (x >= 6 && y <= 1) {
+            tileDownLeft = board[x - 1][y + 1]; //вражеская шашка слева внизу
+            tileDownLeft2 = board[x - 2][y + 2]; //вражеская шашка слева внизу
+            specialPosition = true;
+        }
+        if (outBorderSafePositionByX && !outBorderSafePositionByY) {
+            if (y <= 1) {
+                tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
+                tileDownRight2 = board[x + 2][y + 2]; //вражеская шашка справа внизу
+                tileDownLeft = board[x - 1][y + 1]; //вражеская шашка слева внизу
+                tileDownLeft2 = board[x - 2][y + 2]; //вражеская шашка слева внизу
+            } else {
+                tileUpLeft = board[x - 1][y - 1]; //вражеская шашка слева вверху
+                tileUpLeft2 = board[x - 2][y - 2]; //вражеская шашка слева вверху
+                tileUpRight = board[x + 1][y - 1]; //вражеская шашка справа вверху
+                tileUpRight2 = board[x + 2][y - 2]; //вражеская шашка справа вверху
+            }
+            specialPosition = true;
+        }
+        if (!outBorderSafePositionByX && outBorderSafePositionByY) {
+            if (x <= 1) {
+                tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
+                tileDownRight2 = board[x + 2][y + 2]; //вражеская шашка справа внизу
+                tileUpRight = board[x + 1][y - 1]; //вражеская шашка справа вверху
+                tileUpRight2 = board[x + 2][y - 2]; //вражеская шашка справа вверху
+
+
+            } else {
+                tileDownLeft = board[x - 1][y + 1]; //вражеская шашка слева внизу
+                tileDownLeft2 = board[x - 2][y + 2]; //вражеская шашка слева внизу
+                tileUpLeft = board[x - 1][y - 1]; //вражеская шашка слева вверху
+                tileUpLeft2 = board[x - 2][y - 2]; //вражеская шашка слева вверху
+            }
+            specialPosition = true;
+        }
+
+        if (!specialPosition) {
+            tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
+            tileDownRight2 = board[x + 2][y + 2]; //вражеская шашка справа внизу
+            tileUpRight = board[x + 1][y - 1]; //вражеская шашка справа вверху
+            tileUpRight2 = board[x + 2][y - 2]; //вражеская шашка справа вверху
+            tileUpLeft = board[x - 1][y - 1]; //вражеская шашка слева вверху
+            tileUpLeft2 = board[x - 2][y - 2]; //вражеская шашка слева вверху
+            tileDownLeft = board[x - 1][y + 1]; //вражеская шашка слева внизу
+            tileDownLeft2 = board[x - 2][y + 2]; //вражеская шашка слева внизу
+        }
+
+
+            boolean downLeftCheckersCanBeEaten =  tileDownLeft != null && tileDownLeft.hasChecker() &&
+                    tileDownLeft.getChecker().getType() != checker.getType() && !tileDownLeft2.hasChecker();
+
+            boolean downRightCheckersCanBeEaten = tileDownRight != null && tileDownRight.hasChecker() &&
+                    tileDownRight.getChecker().getType() != checker.getType() && !tileDownRight2.hasChecker();
+
+            boolean upLeftCheckersCanBeEaten = tileUpLeft != null && tileUpLeft.hasChecker() &&
+                    tileUpLeft.getChecker().getType() != checker.getType() && !tileUpLeft2.hasChecker();
+
+            boolean upRightCheckersCanBeEaten = tileUpRight != null &&tileUpRight.hasChecker() &&
+                    tileUpRight.getChecker().getType() != checker.getType() && !tileUpRight2.hasChecker();
+
             switch (checker.getType()) {
                 case WHITE:
-                    if (upCheckersCanBeEaten) return true;
+                    if (upLeftCheckersCanBeEaten || upRightCheckersCanBeEaten) return true;
                     break;
                 case BLACK:
-                    if (downCheckersCanBeEaten) return true;
+                    if (downLeftCheckersCanBeEaten || downRightCheckersCanBeEaten) return true;
                     break;
                 default:
-                    if (checker.isQueen() && (upCheckersCanBeEaten || downCheckersCanBeEaten)) return true;
+                    if (checker.isQueen() && (upLeftCheckersCanBeEaten || upRightCheckersCanBeEaten)) return true;
                     break;
             }
-        }catch (ArrayIndexOutOfBoundsException ex){
             return false;
-        }
-        return false;
     }
 
     public void shouldEatFun() {
-        Checker currentChecker = null;
-        //ArrayList<Checker> checkersThatMustEat = new ArrayList<>();
+        Checker currentChecker;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 currentChecker = board[i][j].hasChecker()? board[i][j].getChecker() : null;
-                if (currentChecker != null && currentChecker.getType() == turn &&
+                if (currentChecker != null && currentChecker.getType().equals(turn) &&
                         enemiesNearbyCanBeKilled(currentChecker, i, j)) {
                     currentChecker.setMustEat(true);
                     checkersThatMustEat.add(currentChecker);
                 }
             }
         }
-
     }
     public static void main(String[] args) {
         launch(args);
