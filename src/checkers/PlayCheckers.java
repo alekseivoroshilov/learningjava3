@@ -130,7 +130,6 @@ public class PlayCheckers extends Application {
                         checker.move(newX, newY);
                         board[x0][y0].setChecker(null);
                         if (newY == 0 || abs(newY) == 7) { //если этот ход пришёлся на верхний-нижний край доски
-                            System.out.println("QUEEN DETECTED");
                             Checker upgradedChecker = makeChecker(checker.getType(), newX, newY, true);
                             board[newX][newY].setChecker(upgradedChecker);
                             checkersGroup.getChildren().add(upgradedChecker);
@@ -140,7 +139,6 @@ public class PlayCheckers extends Application {
                         //всегда меняю очередь хода
                         turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
                         shouldEatFun();
-                        System.out.println(checkersThatMustEat);
 
                     } else checker.wrongMove();
                         // после убийства, если есть ещё вражеские шашки, просто перемещаться нельзя
@@ -154,7 +152,6 @@ public class PlayCheckers extends Application {
 
                         turn = turn == CheckerType.WHITE ? CheckerType.BLACK : CheckerType.WHITE;
                         shouldEatFun();
-                        System.out.println(checkersThatMustEat);
                     }else checker.wrongMove();
                     break;
                 case KILL:
@@ -162,7 +159,6 @@ public class PlayCheckers extends Application {
                     board[x0][y0].setChecker(null);
 
                     if ((newY == 0 || abs(newY) == 7) && !checker.isQueen()) { //после убийства стал королевой
-                        System.out.println("QUEEN DETECTED");
                         Checker upgradedChecker = makeChecker(checker.getType(), newX, newY, true);
                         board[newX][newY].setChecker(upgradedChecker);
                         checkersGroup.getChildren().add(upgradedChecker);
@@ -177,13 +173,11 @@ public class PlayCheckers extends Application {
 
                     previousTurnCheckerKilled = enemiesNearbyCanBeKilled(checker, newX, newY);
 
-                    System.out.println(previousTurnCheckerKilled);
                     // нет шашек противника в досигаемости? ход передаётся противнику
                     if (!previousTurnCheckerKilled) {
                         turn = (turn == CheckerType.WHITE) ? CheckerType.BLACK : CheckerType.WHITE;
                         checkersThatMustEat.clear();
                         shouldEatFun();
-                        System.out.println(checkersThatMustEat);
                     }
                     break;
 
@@ -207,9 +201,6 @@ public class PlayCheckers extends Application {
         boolean outBorderSafePositionByX = x <= 5 && x >= 2;
         boolean outBorderSafePositionByY = y <= 5 && y >= 2;
 
-
-        System.out.println(x + " " + y);
-        System.out.println(outBorderSafePositionByX + " " + outBorderSafePositionByY);
         if (x <= 1 && y <= 1) {
             tileDownRight = board[x + 1][y + 1]; //вражеская шашка справа внизу
             tileDownRight2 = board[x + 2][y + 2]; //вражеская шашка справа внизу
