@@ -14,22 +14,21 @@ import static java.lang.Math.abs;
 import java.util.ArrayList;
 
 public class PlayCheckers extends Application {
-    static final int BOX_SIZE = 98;
+    static final int OBJECTS_SIZE = 5; // множитель размеров всех объектов из 10 возможных
+    static final int BOX_SIZE = 98 * OBJECTS_SIZE / 10;
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
     private Box[][] board = new Box[WIDTH][HEIGHT];
     private ArrayList<Checker> checkersThatMustEat = new ArrayList<>(); //хранит ссылки на шашки, которые должны есть
-
     //заставляет игроков ходить по очереди
     public static CheckerType turn = CheckerType.WHITE;
 
-    //умерла ли какая-нибудь фишка в предыдущий ход? (для серии убийств)
+    //умерла ли какая-ниб удь фишка в предыдущий ход? (для серии убийств)
     public boolean previousTurnCheckerKilled = false;
 
     private Group tileGroup = new Group();
     private Group checkersGroup = new Group();
-    private Image boardImage = new Image("board.png");
-
+    private Image boardImage = new Image("board.png", BOX_SIZE * 9, BOX_SIZE * 9, false, false);
     private Parent createContent() {
         ImageView borderImageViev = new ImageView(boardImage);
         StackPane sp = new StackPane();
@@ -37,8 +36,8 @@ public class PlayCheckers extends Application {
         Pane root = new Pane();
         root.setPrefSize(WIDTH * BOX_SIZE, HEIGHT * BOX_SIZE);
         boardPane.getChildren().addAll(borderImageViev);
-        root.setTranslateY(60);
-        root.setTranslateX(60);
+        root.setTranslateY(60 * OBJECTS_SIZE / 10);
+        root.setTranslateX(60 * OBJECTS_SIZE / 10);
         root.getChildren().addAll(checkersGroup);
         sp.getChildren().add(boardPane);
         sp.getChildren().add(root);

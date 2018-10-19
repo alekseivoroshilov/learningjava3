@@ -10,16 +10,17 @@ import javafx.scene.shape.Ellipse;
 
 
 import static checkers.PlayCheckers.BOX_SIZE;
+import static checkers.PlayCheckers.OBJECTS_SIZE;
 
 //класс, описывающий шашку
 public class Checker extends StackPane {
 
     private CheckerType type;
 
-    private Image blackChecker = new Image("black.png");
-    private Image whiteChecker = new Image("white.png");
-    private Image blackQueenChecker = new Image("blackqueen.png");
-    private Image whiteQueenChecker = new Image("whitequeen.png");
+    private Image blackChecker = new Image("black.png", 83 * OBJECTS_SIZE / 10, 83 * OBJECTS_SIZE / 10, false, false);
+    private Image whiteChecker = new Image("white.png", 83 * OBJECTS_SIZE / 10, 83 * OBJECTS_SIZE / 10, false, false);
+    private Image blackQueenChecker = new Image("blackqueen.png", 83 * OBJECTS_SIZE / 10, 83 * OBJECTS_SIZE / 10, false, false);
+    private Image whiteQueenChecker = new Image("whitequeen.png",  83 * OBJECTS_SIZE / 10, 83 * OBJECTS_SIZE / 10, false, false);
     private double mouseX, mouseY;
     private double oldX, oldY;
     private boolean queen = false;
@@ -60,6 +61,8 @@ public class Checker extends StackPane {
 
         iv.setTranslateX((BOX_SIZE - BOX_SIZE * 0.38 * 2) / 2);
         iv.setTranslateY((BOX_SIZE - BOX_SIZE * 0.38 * 2) / 2);
+        //iv.setTranslateX(0);
+        //iv.setTranslateY(0);
 
         getChildren().addAll(iv);
         setOnMousePressed(e -> {
