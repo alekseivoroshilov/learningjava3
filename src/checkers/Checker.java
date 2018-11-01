@@ -38,7 +38,7 @@ public class Checker extends StackPane {
     }
     public void setMustEat(boolean b) { this.mustEatThisRound = b; }
 
-    public Checker(CheckerType type, int x, int y, boolean queen) {
+    Checker(CheckerType type, int x, int y, boolean queen) {
         this.queen = queen;
         this.type = type;
         DropShadow ds = new DropShadow();
@@ -81,9 +81,7 @@ public class Checker extends StackPane {
         relocate(oldX, oldY);
     }
 
-    public void wrongMove() {
-        relocate(oldX, oldY);
-    }
+    public void wrongMove() { relocate(oldX, oldY); }
 }
 
 enum CheckerType {
