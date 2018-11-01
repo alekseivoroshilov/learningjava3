@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class PlayCheckers extends Application {
     static final int OBJECTS_SIZE = 5; // множитель размеров всех объектов из 10 возможных
-    static final int BOX_SIZE = 98 * OBJECTS_SIZE / 10;
+    static final int BOX_SIZE = 113 * OBJECTS_SIZE / 10;
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
     public Box[][] board = new Box[WIDTH][HEIGHT];
@@ -28,7 +28,7 @@ public class PlayCheckers extends Application {
 
     Group tileGroup = new Group();
     Group checkersGroup = new Group();
-    Image boardImage = new Image("board.png", BOX_SIZE * 9, BOX_SIZE * 9, false, false);
+    Image boardImage = new Image("board.png", BOX_SIZE * 8, BOX_SIZE * 8, false, false);
     Parent createContent() {
         ImageView borderImageViev = new ImageView(boardImage);
         StackPane sp = new StackPane();
@@ -36,8 +36,8 @@ public class PlayCheckers extends Application {
         Pane root = new Pane();
         root.setPrefSize(WIDTH * BOX_SIZE, HEIGHT * BOX_SIZE);
         boardPane.getChildren().addAll(borderImageViev);
-        root.setTranslateY(60 * OBJECTS_SIZE / 10);
-        root.setTranslateX(60 * OBJECTS_SIZE / 10);
+        //root.setTranslateY(60 * OBJECTS_SIZE / 10);
+        //root.setTranslateX(60 * OBJECTS_SIZE / 10);
         root.getChildren().addAll(checkersGroup);
         sp.getChildren().add(boardPane);
         sp.getChildren().add(root);
@@ -56,7 +56,7 @@ public class PlayCheckers extends Application {
                 }
             }
         }
-        return sp;      //returns root;
+        return sp;
     }
 
     public MoveResult tryMove(Checker checker, int newX, int newY) {
